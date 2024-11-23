@@ -51,17 +51,28 @@ export default function BookShow({book}: { book: any }) {
                         <CardContent>
                             <div className="flex flex-col space-y-4">
                                 <div>
-                                    <h2 className="text-lg font-semibold">Nama buku</h2>
+                                    <h2 className="text-lg font-semibold">Judul buku</h2>
                                     <p className="text-gray-600">{book.name}</p>
                                 </div>
                                 <div>
                                     <h2 className="text-lg font-semibold">Kategori</h2>
                                     <BookCategory categories={book.categories}/>
                                 </div>
-
                                 <div>
-                                    <h2 className="text-lg font-semibold">Nama peminjam</h2>
-                                    <p className="text-gray-600">{book.borrower ? book.borrower.name : 'Sedang tidak dipinjam.'}</p>
+                                    <h2 className="text-lg font-semibold">Penerbit</h2>
+                                    <p className="text-gray-600">{book.publisher}</p>
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-semibold">Tahun Terbit</h2>
+                                    <p className="text-gray-600">{book.published_year}</p>
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-semibold">Sinopsis</h2>
+                                    <p className="text-gray-600">{book.synopsis}</p>
+                                </div>
+                                <div>
+                                    <h2 className="text-lg font-semibold">Status Peminjaman</h2>
+                                    <p className="text-gray-600">{book.borrower ? `Dipinjam oleh ${book.borrower.name}` : 'Tersedia'}</p>
                                 </div>
                             </div>
                         </CardContent>

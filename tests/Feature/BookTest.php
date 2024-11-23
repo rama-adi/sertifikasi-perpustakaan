@@ -59,6 +59,9 @@ test('can create new book with categories', function () {
     $response = post(route('book.store'), [
         'name' => 'New Book',
         'category_ids' => $categories->pluck('id')->toArray(),
+        'publisher' => 'Test Publisher',
+        'published_year' => 2020,
+        'synopsis' => 'Test synopsis'
     ]);
 
     $book = Book::first();
@@ -68,6 +71,9 @@ test('can create new book with categories', function () {
 
     $this->assertDatabaseHas('books', [
         'name' => 'New Book',
+        'publisher' => 'Test Publisher',
+        'published_year' => 2020,
+        'synopsis' => 'Test synopsis'
     ]);
 
     expect($book->categories)->toHaveCount(2)
@@ -92,6 +98,31 @@ test('cannot create book with invalid data', function () {
         'name' => 'New Book',
         'category_ids' => [999],
     ])->assertSessionHasErrors(['category_ids']);
+
+    // Test missing publisher
+    post(route('book.store'), [
+        'name' => 'New Book',
+        'category_ids' => [1],
+        'published_year' => 2020,
+        'synopsis' => 'Test synopsis'
+    ])->assertSessionHasErrors(['publisher']);
+
+    // Test invalid published_year
+    post(route('book.store'), [
+        'name' => 'New Book',
+        'category_ids' => [1],
+        'publisher' => 'Test Publisher',
+        'published_year' => 999, // Too low
+        'synopsis' => 'Test synopsis'
+    ])->assertSessionHasErrors(['published_year']);
+
+    // Test missing synopsis
+    post(route('book.store'), [
+        'name' => 'New Book',
+        'category_ids' => [1],
+        'publisher' => 'Test Publisher',
+        'published_year' => 2020,
+    ])->assertSessionHasErrors(['synopsis']);
 });
 
 test('can view single book with relationships', function () {
@@ -129,12 +160,20 @@ test('can view book edit page with current data', function () {
 test('can update book with categories', function () {
     $oldCategories = Category::factory(2)->create();
     $newCategories = Category::factory(2)->create();
-    $book = Book::factory()->create(['name' => 'Old Name']);
+    $book = Book::factory()->create([
+        'name' => 'Old Name',
+        'publisher' => 'Old Publisher',
+        'published_year' => 2020,
+        'synopsis' => 'Old synopsis'
+    ]);
     $book->categories()->attach($oldCategories);
 
     $response = put(route('book.update', $book), [
         'name' => 'Updated Name',
         'category_ids' => $newCategories->pluck('id')->toArray(),
+        'publisher' => 'New Publisher',
+        'published_year' => 2021,
+        'synopsis' => 'New synopsis'
     ]);
 
     $response->assertRedirect(route('book.show', $book));
@@ -143,6 +182,9 @@ test('can update book with categories', function () {
     $book->refresh();
 
     expect($book->name)->toBe('Updated Name')
+        ->and($book->publisher)->toBe('New Publisher')
+        ->and($book->published_year)->toBe(2021)
+        ->and($book->synopsis)->toBe('New synopsis')
         ->and($book->categories)->toHaveCount(2)
         ->and($book->categories->pluck('id'))->toEqual($newCategories->pluck('id'));
 });

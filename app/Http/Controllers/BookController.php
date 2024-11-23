@@ -20,6 +20,8 @@ class BookController extends Controller
                 'id' => $book->id,
                 'name' => $book->name,
                 'categories' => $book->categories->pluck('name'),
+                'published_year' => $book->published_year,
+                'publisher' => $book->publisher,
                 'borrower' => $book->borrower->name ?? 'Belum dipinjam',
             ]);
         return Inertia::render('Book/BookIndex')->with('books', $books);
@@ -44,9 +46,12 @@ class BookController extends Controller
         $request->validate([
             'name' => 'required',
             'category_ids' => 'required|min:1|array|exists:categories,id',
+            'publisher' => 'required',
+            'published_year' => 'required|integer|min:1000|max:' . (date('Y') + 1),
+            'synopsis' => 'required',
         ]);
 
-        $book = Book::create($request->only('name'));
+        $book = Book::create($request->only(['name', 'publisher', 'published_year', 'synopsis']));
         $book->categories()->sync($request->category_ids);
 
         session()->flash('sonner', 'Berhasil menambahkan buku');
@@ -84,9 +89,12 @@ class BookController extends Controller
         $request->validate([
             'name' => 'required',
             'category_ids' => 'required|array|min:1|exists:categories,id',
+            'publisher' => 'required',
+            'published_year' => 'required|integer|min:1000|max:' . (date('Y') + 1),
+            'synopsis' => 'required',
         ]);
 
-        $book->update($request->only('name'));
+        $book->update($request->only(['name', 'publisher', 'published_year', 'synopsis']));
         $book->categories()->sync($request->category_ids);
 
         session()->flash('sonner', 'Berhasil mengubah buku');

@@ -18,6 +18,9 @@ class BookFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
+            'published_year' => mt_rand(1990, 2024),
+            'publisher' => $this->faker->company,
+            'synopsis' => $this->faker->paragraph,
         ];
     }
 }

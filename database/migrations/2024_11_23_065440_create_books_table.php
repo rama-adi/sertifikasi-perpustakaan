@@ -14,6 +14,9 @@ return new class extends Migration
         Schema::create('books', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->integer('published_year');
+            $table->string('publisher');
+            $table->text('synopsis');
             $table->foreignId('borrower_id')
                 ->nullable()->references('id')->on('users')->constrained()->nullOnDelete();
             $table->timestamps();

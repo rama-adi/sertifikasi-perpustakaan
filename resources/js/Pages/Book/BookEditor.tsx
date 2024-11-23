@@ -9,14 +9,17 @@ import {MultiSelect} from "@/Components/MultiSelect";
 import {Pencil, Plus, Tag} from "lucide-react";
 import {FormEventHandler} from "react";
 import {Button} from "@/Components/ui/button";
+import {Textarea} from "@/Components/ui/textarea";
 
 
 export default function BookEditor({categories, book}: { categories: any[], book: any | undefined }) {
     const {data, setData, post, put, processing, errors, reset} = useForm({
         name: book?.name ?? '',
-        category_ids: book?.categories.map((category: any) => `${category.id}`) ?? []
+        category_ids: book?.categories.map((category: any) => `${category.id}`) ?? [],
+        synopsis: book?.synopsis ?? '',
+        publisher: book?.publisher ?? '',
+        published_year: book?.published_year ?? ''
     });
-
 
     const multiSelectCategories = Object.entries(categories).map(([id, name]) => ({
         value: id,
@@ -55,14 +58,13 @@ export default function BookEditor({categories, book}: { categories: any[], book
         }>
         <Head title="Editor buku"/>
 
-
         <div className="py-12">
             <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Tambahkan buku baru</CardTitle>
+                        <CardTitle>{book?.id ? 'Edit buku' : 'Tambahkan buku baru'}</CardTitle>
                         <CardDescription>
-                            Isi form di bawah ini untuk menambahkan buku baru
+                            {book?.id ? 'Edit informasi buku' : 'Isi form di bawah ini untuk menambahkan buku baru'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -92,17 +94,45 @@ export default function BookEditor({categories, book}: { categories: any[], book
                                     options={multiSelectCategories}/>
                                 <InputError message={errors.category_ids} className="mt-2"/>
                             </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="synopsis" value="Sinopsis"/>
+                                <Textarea
+                                    id="synopsis"
+                                    name="synopsis"
+                                    value={data.synopsis}
+                                    className="mt-1 block w-full"
+                                    onChange={(e) => setData('synopsis', e.target.value)}
+                                />
+                                <InputError message={errors.synopsis} className="mt-2"/>
+                            </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="publisher" value="Penerbit"/>
+                                <TextInput
+                                    id="publisher"
+                                    type="text"
+                                    name="publisher"
+                                    value={data.publisher}
+                                    className="mt-1 block w-full"
+                                    onChange={(e) => setData('publisher', e.target.value)}
+                                />
+                                <InputError message={errors.publisher} className="mt-2"/>
+                            </div>
+                            <div className="mt-4">
+                                <InputLabel htmlFor="published_year" value="Tahun Terbit"/>
+                                <TextInput
+                                    id="published_year"
+                                    type="number"
+                                    name="published_year"
+                                    value={data.published_year}
+                                    className="mt-1 block w-full"
+                                    onChange={(e) => setData('published_year', e.target.value)}
+                                />
+                                <InputError message={errors.published_year} className="mt-2"/>
+                            </div>
                         </form>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => {
-                            if (book?.id) {
-                                put(route('book.update', book.id));
-                                return;
-                            }
-
-                            post(route('book.store'));
-                        }}>
+                        <Button onClick={submit}>
                             {book?.id ? <Pencil/> : <Plus/>}
                             {book?.id ? 'Edit buku' : 'Tambah buku'}
                         </Button>

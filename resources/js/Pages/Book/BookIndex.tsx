@@ -9,7 +9,7 @@ import {Separator} from "@/Components/ui/separator";
 export default function BookIndex({books}: { books: any[] }) {
     const BookCategory = ({categories}: { categories: string[] }) => {
         return (
-            <div className={"flex gap-2"}>
+            <div className={"flex flex-wrap gap-2"}>
                 {categories.map((category, index) => (
                     <span
                         key={index}
@@ -43,40 +43,44 @@ export default function BookIndex({books}: { books: any[] }) {
 
             <Separator/>
 
-            <Table>
-                <TableCaption>Daftar buku yang dimiliki perpustakaan ini.</TableCaption>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-[100px]">ID</TableHead>
-                        <TableHead>Judul Buku</TableHead>
-                        <TableHead>Kategori</TableHead>
-                        <TableHead>Peminjam</TableHead>
-                        <TableHead className="text-right">Aksi</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {books.map((book, index) => (
-                        <TableRow key={index}>
-                            <TableCell className="font-medium">{book.id}</TableCell>
-                            <TableCell>{book.name}</TableCell>
-                            <TableCell>
-                                {book.categories.length > 0 ? <BookCategory categories={book.categories}/> : 'Tidak ada kategori'}
-                            </TableCell>
-                            <TableCell>
-                                {book.borrower}
-                            </TableCell>
-                            <TableCell className="text-right space-x-4">
-                                <Link href={route('book.show', book.id)}>
-                                    Lihat
-                                </Link>
-                                <Link href={route('book.edit', book.id)}>
-                                    Edit
-                                </Link>
-                            </TableCell>
+            <div className="overflow-x-auto">
+                <Table>
+                    <TableCaption>Daftar buku yang dimiliki perpustakaan ini.</TableCaption>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-[50px]">ID</TableHead>
+                            <TableHead>Judul Buku</TableHead>
+                            <TableHead>Penerbit</TableHead>
+                            <TableHead>Kategori</TableHead>
+                            <TableHead>Peminjam</TableHead>
+                            <TableHead className="text-right">Aksi</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {books.map((book, index) => (
+                            <TableRow key={index}>
+                                <TableCell className="font-medium">{book.id}</TableCell>
+                                <TableCell>{book.name}</TableCell>
+                                <TableCell>{book.publisher} ({book.published_year})</TableCell>
+                                <TableCell>
+                                    {book.categories.length > 0 ? <BookCategory categories={book.categories}/> : 'Tidak ada kategori'}
+                                </TableCell>
+                                <TableCell>
+                                    {book.borrower}
+                                </TableCell>
+                                <TableCell className="text-right space-x-4">
+                                    <Link href={route('book.show', book.id)}>
+                                        Lihat
+                                    </Link>
+                                    <Link href={route('book.edit', book.id)}>
+                                        Edit
+                                    </Link>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </div>
         </AuthenticatedLayout>
     );
 }
