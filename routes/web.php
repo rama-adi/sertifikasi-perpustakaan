@@ -14,14 +14,33 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::prefix('/dashboard')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+    Route::resource('user', \App\Http\Controllers\UserController::class);
+
+    Route::prefix('/borrow-book')->group(function () {
+        Route::get('/', [App\Http\Controllers\ReturnBorrowController::class, 'borrowCreate'])
+            ->name('borrow-book.create');
+        Route::post('/', [App\Http\Controllers\ReturnBorrowController::class, 'borrowStore'])
+            ->name('borrow-book.store');
+    });
+
+    Route::prefix('/return-book')->group(function () {
+        Route::get('/', [App\Http\Controllers\ReturnBorrowController::class, 'returnCreate'])
+            ->name('return-book.create');
+        Route::post('/', [App\Http\Controllers\ReturnBorrowController::class, 'returnStore'])
+            ->name('return-book.store');
+    });
+
+    Route::resource('book', \App\Http\Controllers\BookController::class);
+    Route::resource('category', \App\Http\Controllers\CategoryController::class);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
